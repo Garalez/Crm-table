@@ -14,7 +14,6 @@ const modalGoodsDiscountInput = document.querySelector('[name=discount_count]');
 const modalGoodsTotalCost = document.querySelector('.modal__total');
 const tBody = document.querySelector('.table__body');
 
-<<<<<<< HEAD
 panelBtnOpenModal.addEventListener('click', () => {
   modalGoods.classList.add('active');
 });
@@ -25,14 +24,6 @@ modalGoods.addEventListener('click', e => {
       target.closest('.modal__close')) {
     modalGoods.classList.remove('active');
   }
-=======
-modalGoodsBtnClose.addEventListener('click', () => {
-  modalGoods.classList.remove('active');
-});
-
-panelBtnOpenModal.addEventListener('click', () => {
-  modalGoods.classList.add('active');
->>>>>>> parent of a460133 (ready)
 });
 
 modalGoodsDiscountCheckbox.addEventListener('click', () => {
