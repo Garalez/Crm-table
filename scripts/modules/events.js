@@ -1,5 +1,6 @@
 import {totalPricePage} from './priceCalcs.js';
-import {addNewProduct} from './editElements.js';
+import {addNewProduct} from './createElements.js';
+import {arr} from '../index.js';
 import selectors from './selectors.js';
 const {
   modalGoodsIdNumber,
@@ -10,6 +11,7 @@ const {
   modalGoodsInputs,
   modalGoods,
   panelBtnOpenModal,
+  tBody,
 } = selectors;
 
 export const modalEvents = () => {
@@ -63,6 +65,28 @@ export const formControl = (closeModal) => {
     modalGoodsTotalCost.textContent = '$0';
     totalPricePage();
     closeModal();
+  });
+};
+
+export const removeRow = () => {
+  tBody.addEventListener('click', e => {
+    const target = e.target;
+    const id = target.parentNode.parentNode.childNodes[0].textContent;
+    if (target.closest('.table__btn_del')) {
+      target.closest('tr').remove();
+      arr.forEach((item, index) => {
+        if (id === item.id.toString()) {
+          arr.splice([index], 1);
+        }
+      });
+      totalPricePage();
+    }
+    if (target.closest('.table__btn_pic')) {
+      const left = (screen.width / 2);
+      const top = (screen.height / 2);
+      const winPos = `top=${top - 300},left=${left - 300},width=600,height=600`;
+      open(`${target.dataset.pic}`, '', winPos);
+    }
   });
 };
 

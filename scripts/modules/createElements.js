@@ -1,4 +1,3 @@
-import {totalPricePage} from './priceCalcs.js';
 import {arr} from '../index.js';
 import selectors from './selectors.js';
 const {
@@ -62,6 +61,7 @@ export const addNewProduct = () => {
   const btnPic = document.createElement('button');
   const btnEdit = document.createElement('button');
   const bntDel = document.createElement('button');
+  btnPic.setAttribute('data-pic', '../../img/test.jpg');
   bntDel.classList.add('table__btn', 'table__btn_del');
   btnEdit.classList.add('table__btn', 'table__btn_edit');
   btnPic.classList.add('table__btn', 'table__btn_pic');
@@ -81,21 +81,3 @@ export const addNewProduct = () => {
   arr.push(obj);
   console.log(arr);
 };
-
-export const removeRow = () => {
-  tBody.addEventListener('click', e => {
-    const target = e.target;
-    const id = target.parentNode.parentNode.childNodes[0].textContent;
-    if (target.closest('.table__btn_del')) {
-      target.closest('tr').remove();
-      arr.forEach((item, index) => {
-        if (id === item.id.toString()) {
-          arr.splice([index], 1);
-        }
-      });
-      totalPricePage();
-      console.log(arr);
-    }
-  });
-};
-

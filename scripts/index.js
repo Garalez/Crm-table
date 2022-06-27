@@ -1,7 +1,7 @@
 import {totalPricePage} from './modules/priceCalcs.js';
-import {createRow, removeRow} from './modules/editElements.js';
+import {createRow} from './modules/createElements.js';
 import {renderGoods} from './modules/render.js';
-import {modalEvents, formControl} from './modules/modal.js';
+import {modalEvents, formControl, removeRow} from './modules/events.js';
 
 export const arr = [
   {
