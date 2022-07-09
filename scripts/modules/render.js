@@ -42,7 +42,7 @@ export const renderGoods = (err, data) => {
     bntDel.classList.add('table__btn', 'table__btn_del');
     btnEdit.classList.add('table__btn', 'table__btn_edit');
     btnPic.classList.add('table__btn', 'table__btn_pic');
-    btnPic.setAttribute('data-pic', `${item.image}`);
+    btnPic.setAttribute('data-pic', `../../img/fire.jpg`);
     createEditCell.replaceChildren(btnPic);
     createEditCell.append(btnEdit);
     createEditCell.append(bntDel);
