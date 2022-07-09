@@ -1,6 +1,8 @@
 import {totalPricePage} from './priceCalcs.js';
-import {addNewProduct} from './createElements.js';
-import {arr} from '../index.js';
+import {createModalError, errorText} from './error.js';
+import {URL} from '../index.js';
+import {httpRequest} from './data.js';
+import {renderGoods} from './render.js';
 import selectors from './selectors.js';
 const {
   modalGoodsIdNumber,
@@ -58,29 +60,67 @@ export const modalEvents = () => {
 };
 
 export const formControl = (closeModal) => {
+  const errorModal = createModalError();
+
   modalGoodsForm.addEventListener('submit', e => {
     e.preventDefault();
-    addNewProduct();
-    modalGoodsForm.reset();
-    modalGoodsTotalCost.textContent = '$0';
-    totalPricePage();
-    closeModal();
+
+    httpRequest(URL, {
+      method: 'POST',
+      body: {
+        id: modalGoodsIdNumber.textContent,
+        title: modalGoodsForm.name.value,
+        category: modalGoodsForm.category.value,
+        units: modalGoodsForm.units.value,
+        count: modalGoodsForm.count.value,
+        price: modalGoodsForm.price.value,
+        description: modalGoodsForm.description.value,
+      },
+      callback(err, data) {
+        if (err) {
+          console.warn(err, data);
+          if (err.status === 422 || err.status === 404 || err.status >= 500) {
+            errorText(err);
+          } else {
+            errorModal.classList.add('active');
+          }
+        } else {
+          while (tBody.lastElementChild) {
+            tBody.removeChild(tBody.lastElementChild);
+          }
+          httpRequest(URL, {
+            method: 'GET',
+            callback: renderGoods,
+          });
+          totalPricePage();
+          modalGoodsForm.reset();
+          closeModal();
+          modalGoodsTotalCost.textContent = '$0';
+        }
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  });
+
+  errorModal.addEventListener('click', e => {
+    const target = e.target;
+    if (target === errorModal ||
+        target.closest('.modal__error')) {
+      errorModal.classList.remove('active');
+    }
   });
 };
 
 export const removeRow = () => {
   tBody.addEventListener('click', e => {
     const target = e.target;
-    const id = target.parentNode.parentNode.childNodes[0].textContent;
     if (target.closest('.table__btn_del')) {
       target.closest('tr').remove();
-      arr.forEach((item, index) => {
-        if (id === item.id.toString()) {
-          arr.splice([index], 1);
-        }
-      });
       totalPricePage();
     }
+
     if (target.closest('.table__btn_pic')) {
       const left = (screen.width / 2);
       const top = (screen.height / 2);

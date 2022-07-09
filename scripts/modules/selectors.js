@@ -9,6 +9,7 @@ const modalGoods = document.querySelector('.overlay');
 const panelBtnOpenModal = document.querySelector('.panel__add-goods');
 const tBody = document.querySelector('.table__body');
 const crmTotalPrice = document.querySelector('.crm__total-price');
+const formFieldset = document.querySelector('.modal__fieldset');
 
 export default {
   modalGoodsIdNumber,
@@ -21,4 +22,5 @@ export default {
   panelBtnOpenModal,
   tBody,
   crmTotalPrice,
+  formFieldset,
 };
