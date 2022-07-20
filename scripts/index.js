@@ -1,8 +1,9 @@
 import {totalPricePage} from './modules/priceCalcs.js';
 import {httpRequest} from './modules/data.js';
 import {renderGoods} from './modules/render.js';
-import {modalEvents, formControl, removeRow} from './modules/events.js';
+import {modalEvents, removeRow} from './modules/events.js';
 import './modules/data.js';
+
 
 export const URL = 'https://hidden-castle-31466.herokuapp.com/api/goods';
 
@@ -14,8 +15,7 @@ export const URL = 'https://hidden-castle-31466.herokuapp.com/api/goods';
     });
     removeRow();
     totalPricePage();
-    const {closeModal} = modalEvents();
-    formControl(closeModal);
+    modalEvents();
   };
   init();
 }

@@ -56,5 +56,4 @@ export const renderGoods = (err, data) => {
     });
   });
   totalPricePage();
-  console.log(tBody.children);
 };

@@ -1,5 +1,5 @@
 import selectors from './selectors.js';
-const {modalGoods, formFieldset} = selectors;
+const {formFieldset} = selectors;
 
 export const createModalError = () => {
   const errorOverlay = document.createElement('div');
@@ -44,7 +44,6 @@ export const createModalError = () => {
 
   modalError.append(modalErrorBtn, xMark, modalErrorText);
   errorOverlay.append(modalError);
-  modalGoods.append(errorOverlay);
 
   return errorOverlay;
 };

@@ -1,114 +1,130 @@
 import {totalPricePage} from './priceCalcs.js';
 import {createModalError, errorText} from './error.js';
+import {showModal} from './modal.js';
 import {URL} from '../index.js';
 import {httpRequest} from './data.js';
 import {renderGoods} from './render.js';
 import selectors from './selectors.js';
 const {
-  modalGoodsIdNumber,
-  modalGoodsForm,
-  modalGoodsDiscountCheckbox,
-  modalGoodsDiscountInput,
-  modalGoodsTotalCost,
-  modalGoodsInputs,
-  modalGoods,
-  panelBtnOpenModal,
   tBody,
+  crmGoods,
 } = selectors;
 
 export const modalEvents = () => {
-  const openModal = () => {
-    modalGoods.classList.add('active');
-  };
-
-  const closeModal = () => {
-    modalGoods.classList.remove('active');
-  };
-
-  panelBtnOpenModal.addEventListener('click', openModal);
-
-  modalGoods.addEventListener('click', e => {
-    const target = e.target;
-    if (target === modalGoods ||
-        target.closest('.modal__close')) {
-      closeModal();
-    }
-
-    if (target === modalGoodsDiscountCheckbox) {
-      modalGoodsDiscountInput.toggleAttribute('disabled');
-    }
-
-    if (!modalGoodsDiscountCheckbox.checked) {
-      modalGoodsDiscountInput.value = '';
-    }
-
-    if (target.closest('.vendor-code__btn')) {
-      const newIdNumber = prompt('Введите новый id');
-      modalGoodsIdNumber.textContent = newIdNumber;
-    }
-  });
-
-  modalGoodsInputs.forEach(elem => {
-    elem.addEventListener('blur', () => {
-      modalGoodsTotalCost.textContent =
-      `$${+modalGoodsForm.count.value * +modalGoodsForm.price.value}`;
-    });
-  });
-  return {
-    closeModal,
-  };
-};
-
-export const formControl = (closeModal) => {
   const errorModal = createModalError();
 
-  modalGoodsForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    httpRequest(URL, {
-      method: 'POST',
-      body: {
-        id: modalGoodsIdNumber.textContent,
-        title: modalGoodsForm.name.value,
-        category: modalGoodsForm.category.value,
-        units: modalGoodsForm.units.value,
-        count: modalGoodsForm.count.value,
-        price: modalGoodsForm.price.value,
-        description: modalGoodsForm.description.value,
-      },
-      callback(err, data) {
-        if (err) {
-          console.warn(err, data);
-          if (err.status === 422 || err.status === 404 || err.status >= 500) {
-            errorText(err);
-          } else {
-            errorModal.classList.add('active');
-          }
-        } else {
-          while (tBody.lastElementChild) {
-            tBody.removeChild(tBody.lastElementChild);
-          }
-          httpRequest(URL, {
-            method: 'GET',
-            callback: renderGoods,
-          });
-          totalPricePage();
-          modalGoodsForm.reset();
-          closeModal();
-          modalGoodsTotalCost.textContent = '$0';
-        }
-      },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  });
-
-  errorModal.addEventListener('click', e => {
+  crmGoods.addEventListener('click', async e => {
     const target = e.target;
-    if (target === errorModal ||
-        target.closest('.modal__error')) {
-      errorModal.classList.remove('active');
+    if (target.classList.contains('table__btn_edit') ||
+      target.classList.contains('panel__add-goods')) {
+      const {overlay, modalForm, modalInputs, modalTotalPrice,
+        modalIdNumber} = await showModal();
+
+      modalForm.append(errorModal);
+
+      if (target.classList.contains('table__btn_edit')) {
+        const idCell = target.parentNode.parentNode.children[0].textContent;
+        httpRequest(`${URL}/${idCell}`, {
+          method: 'GET',
+          callback(err, data) {
+            if (err) {
+              console.warn(err, data);
+              if (err.status === 422 || err.status === 404 || err.status >= 500) {
+                errorText(err);
+              } else {
+                errorModal.classList.add('active');
+              }
+            } else {
+              modalIdNumber.textContent = idCell;
+              modalForm.name.value = data.title;
+              modalForm.category.value = data.category;
+              modalForm.units.value = data.units;
+              modalForm.count.value = data.count;
+              modalForm.price.value = data.price;
+              modalForm.description.value = data.description;
+              modalTotalPrice.textContent = `$${data.price * data.count}`;
+            }
+          },
+        });
+      }
+
+      modalInputs.forEach(elem => {
+        elem.addEventListener('blur', () => {
+          modalTotalPrice.textContent =
+          `$${+modalForm.count.value * +modalForm.price.value}`;
+        });
+      });
+
+      overlay.addEventListener('click', e => {
+        const target = e.target;
+        if (target === overlay ||
+          target.closest('.modal__close')) {
+          overlay.remove();
+        }
+
+        if (target === modalForm.discount) {
+          modalForm.discount_count.toggleAttribute('disabled');
+        }
+
+        if (!modalForm.discount.checked) {
+          modalForm.discount_count.value = '';
+        }
+
+        if (target.closest('.vendor-code__btn')) {
+          const newIdNumber = prompt('Введите новый id');
+          modalIdNumber.textContent = newIdNumber;
+        }
+      });
+
+      modalForm.addEventListener('submit', e => {
+        e.preventDefault();
+
+        httpRequest(URL, {
+          method: 'POST',
+          body: {
+            id: modalIdNumber.textContent,
+            title: modalForm.name.value,
+            category: modalForm.category.value,
+            units: modalForm.units.value,
+            count: modalForm.count.value,
+            price: modalForm.price.value,
+            description: modalForm.description.value,
+          },
+          callback(err, data) {
+            if (err) {
+              console.warn(err, data);
+              if (err.status === 422 || err.status === 404 || err.status >= 500) {
+                errorText(err);
+              } else {
+                errorModal.classList.add('active');
+              }
+            } else {
+              while (tBody.lastElementChild) {
+                tBody.removeChild(tBody.lastElementChild);
+              }
+              httpRequest(URL, {
+                method: 'GET',
+                callback: renderGoods,
+              });
+              totalPricePage();
+              modalForm.reset();
+              overlay.remove();
+              modalTotalPrice.textContent = '$0';
+            }
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      });
+
+      errorModal.addEventListener('click', e => {
+        const target = e.target;
+        if (target === errorModal ||
+            target.closest('.modal__error')) {
+          errorModal.classList.remove('active');
+        }
+      });
     }
   });
 };
