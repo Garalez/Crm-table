@@ -63,8 +63,7 @@
     "category description"
     "units count"
     "discount price"
-    ". file"
-    "file-add file-add";
+    ". file";
   gap: 12px 24px;
   background: #FFFFFF;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -114,6 +113,7 @@
 
 .modal__label_discount {
   grid-area: discount;
+  margin-bottom: 12px;
   width: 100%;
   display: block;
 }
@@ -124,6 +124,7 @@
 
 .modal__label_price {
   grid-area: price;
+  margin-bottom: 12px;
 }
 
 

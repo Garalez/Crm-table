@@ -1,6 +1,3 @@
-import selectors from './selectors.js';
-const {formFieldset} = selectors;
-
 export const createModalError = () => {
   const errorOverlay = document.createElement('div');
   errorOverlay.classList.add('overlay', 'error-overlay');
@@ -50,15 +47,16 @@ export const createModalError = () => {
 
 export const errorText = (err) => {
   const errorTxt = document.createElement('p');
-  errorTxt.textContent = `Ошибка: ${err.status}`;
+  errorTxt.textContent = err;
   errorTxt.style.width = '100%';
   errorTxt.style.display = 'flex';
   errorTxt.style.justifyContent = 'center';
   errorTxt.style.alignItems = 'center';
   errorTxt.style.color = '#D80101';
   errorTxt.style.fontWeight = '700';
-  errorTxt.style.fontSize = '17px';
+  errorTxt.style.fontSize = '14px';
+  errorTxt.style.textTransform = 'uppercase';
+  errorTxt.style.textAlign = 'center';
 
-
-  formFieldset.append(errorTxt);
+  return errorTxt;
 };

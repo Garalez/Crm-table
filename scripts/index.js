@@ -5,11 +5,11 @@ import {modalEvents, removeRow} from './modules/events.js';
 import './modules/data.js';
 
 
-export const URL = 'https://hidden-castle-31466.herokuapp.com/api/goods';
+export const serverAddress = 'https://hidden-castle-31466.herokuapp.com/api/goods';
 
 {
   const init = () => {
-    httpRequest(URL, {
+    httpRequest(serverAddress, {
       method: 'GET',
       callback: renderGoods,
     });

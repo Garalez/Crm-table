@@ -91,15 +91,19 @@ export const showModal = async () => {
 
   const overlay = document.querySelector('.overlay');
   const modalForm = document.querySelector('.modal__form');
+  const modalFieldset = document.querySelector('.modal__fieldset');
   const modalInputs = document.querySelectorAll('.modal__input');
   const modalTotalPrice = document.querySelector('.modal__total-price');
   const modalIdNumber = document.querySelector('.vendor-code__id');
+  const modalImage = document.querySelector('.modal__file');
 
   return {
     overlay,
     modalForm,
+    modalFieldset,
     modalInputs,
     modalTotalPrice,
     modalIdNumber,
+    modalImage,
   };
 };

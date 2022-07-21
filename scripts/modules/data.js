@@ -16,7 +16,8 @@ export const httpRequest = (url, {
 
     xhr.addEventListener('load', () => {
       if (xhr.status < 200 || xhr.status >= 300) {
-        callback(new Error(xhr.status), xhr.response);
+        console.log(xhr.status);
+        callback(xhr.status, xhr.response);
         return;
       }
 

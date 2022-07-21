@@ -1,7 +1,7 @@
 import {totalPricePage} from './priceCalcs.js';
 import {createModalError, errorText} from './error.js';
 import {showModal} from './modal.js';
-import {URL} from '../index.js';
+import {serverAddress} from '../index.js';
 import {httpRequest} from './data.js';
 import {renderGoods} from './render.js';
 import selectors from './selectors.js';
@@ -17,20 +17,21 @@ export const modalEvents = () => {
     const target = e.target;
     if (target.classList.contains('table__btn_edit') ||
       target.classList.contains('panel__add-goods')) {
-      const {overlay, modalForm, modalInputs, modalTotalPrice,
-        modalIdNumber} = await showModal();
+      const {overlay, modalForm, modalFieldset, modalInputs, modalTotalPrice,
+        modalIdNumber, modalImage} = await showModal();
 
       modalForm.append(errorModal);
 
       if (target.classList.contains('table__btn_edit')) {
         const idCell = target.parentNode.parentNode.children[0].textContent;
-        httpRequest(`${URL}/${idCell}`, {
+
+        httpRequest(`${serverAddress}/${idCell}`, {
           method: 'GET',
           callback(err, data) {
             if (err) {
-              console.warn(err, data);
-              if (err.status === 422 || err.status === 404 || err.status >= 500) {
-                errorText(err);
+              console.warn(new Error(err), data);
+              if (err === 422 || err === 404 || err >= 500) {
+                modalFieldset.append(errorText(`Ошибка : ${err}`));
               } else {
                 errorModal.classList.add('active');
               }
@@ -47,6 +48,38 @@ export const modalEvents = () => {
           },
         });
       }
+
+      modalImage.addEventListener('change', () => {
+        if (modalImage.files.length > 0) {
+          const src = URL.createObjectURL(modalImage.files[0]);
+
+          if (modalImage.files[0].size > 1000000) {
+            const weightLimit = 'Изображение не должно превышать размер 1 Мб';
+
+            modalFieldset.append(errorText(weightLimit));
+          } else {
+            modalFieldset.style.gridTemplateAreas = `
+            "name description"
+            "category description"
+            "units count"
+            "discount price" 
+            ". file" 
+            "file-add file-add"`;
+
+            const imageWrapper = document.createElement('div');
+            imageWrapper.classList.add('image-container');
+            imageWrapper.style.display = 'flex';
+            imageWrapper.style.justifyContent = 'center';
+
+            const imagePreview = document.createElement('img');
+            imagePreview.style.height = '200px';
+            imagePreview.src = src;
+
+            imageWrapper.append(imagePreview);
+            modalFieldset.append(imageWrapper);
+          }
+        }
+      });
 
       modalInputs.forEach(elem => {
         elem.addEventListener('blur', () => {
@@ -79,7 +112,7 @@ export const modalEvents = () => {
       modalForm.addEventListener('submit', e => {
         e.preventDefault();
 
-        httpRequest(URL, {
+        httpRequest(serverAddress, {
           method: 'POST',
           body: {
             id: modalIdNumber.textContent,
@@ -92,8 +125,8 @@ export const modalEvents = () => {
           },
           callback(err, data) {
             if (err) {
-              console.warn(err, data);
-              if (err.status === 422 || err.status === 404 || err.status >= 500) {
+              console.warn(new Error(err), data);
+              if (err === 422 || err === 404 || err >= 500) {
                 errorText(err);
               } else {
                 errorModal.classList.add('active');
@@ -102,7 +135,7 @@ export const modalEvents = () => {
               while (tBody.lastElementChild) {
                 tBody.removeChild(tBody.lastElementChild);
               }
-              httpRequest(URL, {
+              httpRequest(serverAddress, {
                 method: 'GET',
                 callback: renderGoods,
               });
