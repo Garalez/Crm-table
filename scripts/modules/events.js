@@ -140,9 +140,15 @@ export const modalEvents = () => {
       modalForm.addEventListener('submit', e => {
         e.preventDefault();
 
-        if (modalForm.description.value.length < 80) {
-          modalForm.description.setAttribute('title', 'Введено меньше 80 символов');
-          modalForm.description.focus();
+        if (modalForm.description.value.length < 80 || modalForm.name.value ||
+            modalForm.category.value || modalForm.units.value ||
+            modalForm.count.value || modalForm.price.value) {
+          if (modalForm.description.value.length < 80) {
+            modalForm.description.setAttribute('title',
+                'Введено меньше 80 символов');
+            modalForm.description.focus();
+          }
+          return;
         } else {
           httpRequest(serverAddress, {
             method: 'POST',
