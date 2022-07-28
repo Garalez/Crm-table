@@ -81,6 +81,34 @@ export const modalEvents = () => {
         }
       });
 
+      modalForm.name.addEventListener('input', () => {
+        modalForm.name.value = modalForm.name.value.replace(/[^а-я ]/gi, '');
+      });
+
+      modalForm.category.addEventListener('input', () => {
+        modalForm.category.value = modalForm.category.value.replace(/[^а-я ]/gi, '');
+      });
+
+      modalForm.description.addEventListener('input', () => {
+        modalForm.description.value = modalForm.description.value.replace(/[^а-я ]/gi, '');
+      });
+
+      modalForm.units.addEventListener('input', () => {
+        modalForm.units.value = modalForm.units.value.replace(/[^а-я]/gi, '');
+      });
+
+      modalForm.count.addEventListener('input', () => {
+        modalForm.count.value = modalForm.count.value.replace(/\D/g, '');
+      });
+
+      modalForm.discount_count.addEventListener('input', () => {
+        modalForm.discount_count.value = modalForm.discount_count.value.replace(/\D/g, '');
+      });
+
+      modalForm.price.addEventListener('input', () => {
+        modalForm.price.value = modalForm.price.value.replace(/\D/g, '');
+      });
+
       modalInputs.forEach(elem => {
         elem.addEventListener('blur', () => {
           modalTotalPrice.textContent =
@@ -112,43 +140,48 @@ export const modalEvents = () => {
       modalForm.addEventListener('submit', e => {
         e.preventDefault();
 
-        httpRequest(serverAddress, {
-          method: 'POST',
-          body: {
-            id: modalIdNumber.textContent,
-            title: modalForm.name.value,
-            category: modalForm.category.value,
-            units: modalForm.units.value,
-            count: modalForm.count.value,
-            price: modalForm.price.value,
-            description: modalForm.description.value,
-          },
-          callback(err, data) {
-            if (err) {
-              console.warn(new Error(err), data);
-              if (err === 422 || err === 404 || err >= 500) {
-                errorText(err);
+        if (modalForm.description.value.length < 80) {
+          modalForm.description.setAttribute('title', 'Введено меньше 80 символов');
+          modalForm.description.focus();
+        } else {
+          httpRequest(serverAddress, {
+            method: 'POST',
+            body: {
+              id: modalIdNumber.textContent,
+              title: modalForm.name.value,
+              category: modalForm.category.value,
+              units: modalForm.units.value,
+              count: modalForm.count.value,
+              price: modalForm.price.value,
+              description: modalForm.description.value,
+            },
+            callback(err, data) {
+              if (err) {
+                console.warn(new Error(err), data);
+                if (err === 422 || err === 404 || err >= 500) {
+                  errorText(err);
+                } else {
+                  errorModal.classList.add('active');
+                }
               } else {
-                errorModal.classList.add('active');
+                while (tBody.lastElementChild) {
+                  tBody.removeChild(tBody.lastElementChild);
+                }
+                httpRequest(serverAddress, {
+                  method: 'GET',
+                  callback: renderGoods,
+                });
+                totalPricePage();
+                modalForm.reset();
+                overlay.remove();
+                modalTotalPrice.textContent = '$0';
               }
-            } else {
-              while (tBody.lastElementChild) {
-                tBody.removeChild(tBody.lastElementChild);
-              }
-              httpRequest(serverAddress, {
-                method: 'GET',
-                callback: renderGoods,
-              });
-              totalPricePage();
-              modalForm.reset();
-              overlay.remove();
-              modalTotalPrice.textContent = '$0';
-            }
-          },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+            },
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        }
       });
 
       errorModal.addEventListener('click', e => {
