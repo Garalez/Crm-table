@@ -5,7 +5,7 @@ export const showModal = async () => {
   await loadStyle('css/modal.css');
 
   document.body.insertAdjacentHTML('beforeend', `
-    <div class="overlay active">
+    <div class="overlay">
       <div class="overlay__modal modal">
         <button class="modal__close">
           <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,6 +96,8 @@ export const showModal = async () => {
   const modalTotalPrice = document.querySelector('.modal__total-price');
   const modalIdNumber = document.querySelector('.vendor-code__id');
   const modalImage = document.querySelector('.modal__file');
+  const modalTitle = document.querySelector('.modal__title');
+  const modalSubmitBtn = document.querySelector('.modal__submit');
 
   return {
     overlay,
@@ -105,5 +107,7 @@ export const showModal = async () => {
     modalTotalPrice,
     modalIdNumber,
     modalImage,
+    modalTitle,
+    modalSubmitBtn,
   };
 };

@@ -55,5 +55,6 @@ export const renderGoods = (err, data) => {
       elem.classList.add('table__cell');
     });
   });
+
   totalPricePage();
 };

@@ -321,6 +321,11 @@
   margin: 0 auto;
 }
 
+.buttons__wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+
 
 @media (max-width: 1000px) {
   .modal__fieldset {
